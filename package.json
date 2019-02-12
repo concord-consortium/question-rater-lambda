@@ -1,0 +1,27 @@
+{
+  "name": "question-rater-lambda",
+  "version": "1.0.0",
+  "description": "Question Rater lamba function",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "./build.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/concord-consortium/question-rater-lambda.git"
+  },
+  "author": "Doug Martin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/concord-consortium/question-rater-lambda/issues"
+  },
+  "homepage": "https://github.com/concord-consortium/question-rater-lambda#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "xml2js": "^0.4.19"
+  },
+  "devDependencies": {
+    "jest": "^24.1.0"
+  }
+}
