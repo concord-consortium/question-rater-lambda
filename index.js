@@ -43,8 +43,7 @@ const getItemResult = async (clientId, itemArray) => {
   const responses = await Promise.all(item.responses.map((response) => getResponseResult(clientId, itemId, response.response)));
 
   return {
-    item: {$: {id: itemId}},
-    responses
+    item: {$: {id: itemId}, responses}
   }
 }
 
