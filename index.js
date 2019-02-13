@@ -10,23 +10,22 @@ const getResponseResult = async (clientId, itemId, responseArray) => {
   if (!responseId) {
     throw new Error("Missing response id in request!");
   }
-  const question = response._ || "";
-  if (question.length === 0) {
-    throw new Error("Missing question in request!");
+  const answer = response._ || "";
+  if (answer.length === 0) {
+    throw new Error("Missing answer in request!");
   }
 
-  // TODO: send info to rating service and await response and then return score
-  // const url = process.env.RATER_ENDPOINT || "???";
-  // const params = {clientId, itemId, responseId, question};
-  // const result = await axios.post(url, params);
-  // sent result back in response...
+  // send info to rating service and await response and then return score
+  const url = process.env.RATER_ENDPOINT || "https://us-central1-esaaf-auto-score-test.cloudfunctions.net/getPrediction";
+  const params = {clientId, itemId, responseId, answer};
+  const result = await axios.post(url, params);
+  if (!result || !result.data || !result.data.hasOwnProperty("label")) {
+    throw new Error("Missing label in question rater response!");
+  }
 
   return {
     response: {
-      $: {id: responseId, score: 2, concepts: "3,6", realNumberScore: "2.62039", confidenceMeasure: "0.34574"},
-      advisorylist: {
-        advisorycode: {_: "101"}
-      }
+      $: {id: responseId, score: result.data.label},
     }
   }
 }

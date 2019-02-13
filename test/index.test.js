@@ -1,4 +1,7 @@
+const axios = require("axios");
 const {handler} = require("../index");
+
+jest.mock('axios');
 
 const errorResult = (error, includeClientId) => {
   return {
@@ -65,9 +68,19 @@ test("fails with missing crater-request.items.item.responses.id in body", () => 
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing response id in request!", true));
 });
 
-// TODO: add mocks for axios to test rater endpoint
+test("fails when proxied question rater endpoint doesn't return label value", () => {
+  axios.post.mockReturnValue({data: {}});
+
+  const event = {
+    headers: {"Content-Type": "text/html"},
+    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"123\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[this is a test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
+  };
+  expect(handler(event)).resolves.toEqual(errorResult("Error: Missing label in question rater response!", true));
+});
 
 test("returns a valid xml response on a good request", async () => {
+  axios.post.mockReturnValue({data: {label: "2"}});
+
   const event = {
     headers: {"Content-Type": "text/html"},
     body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"123\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[this is a test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
@@ -88,18 +101,12 @@ test("returns a valid xml response on a good request", async () => {
       <items>
         <item id="${item_id}">
           <responses>
-            <response id="${response_id}" score="${score}" concepts="3,6" realNumberScore="2.62039"
-              confidenceMeasure="0.34574">
-              <advisorylist>
-                <advisorycode>101</advisorycode>
-              </advisorylist>
-            </response>
+            <response id="${response_id}" score="${score}"/>
           </responses>
         </item>
       </items>
     </crater-results>
   `;
   assertXmlMatch(result.body, expectedXml);
-
 });
 
