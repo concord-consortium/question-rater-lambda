@@ -1,9 +1,15 @@
 const {handler} = require("../index");
 const {assertXmlMatch} = require("./test-utils");
+const { authorizationValue } = require("../auth");
+
+const headers = {
+  "Content-Type": "text/html",
+  Authorization: authorizationValue
+};
 
 test("returns a valid xml response on a good request to the non-mocked service", async () => {
   const event = {
-    headers: {"Content-Type": "text/html"},
+    headers,
     body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"2\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
   };
 
