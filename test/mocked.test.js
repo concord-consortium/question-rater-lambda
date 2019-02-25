@@ -1,8 +1,8 @@
-const axios = require("axios");
+const {postViaPromise} = require("../post-via-promise");
 const {handler} = require("../index");
 const {assertXmlMatch, errorResult} = require("./test-utils");
 
-jest.mock('axios');
+jest.mock('../post-via-promise');
 
 test("fails with missing body element in event", () => {
   expect(handler({})).resolves.toEqual(errorResult("Error: Missing body element in lambda event!"));
@@ -45,40 +45,40 @@ test("fails with missing crater-request.items.item id in body", () => {
 
 test("fails with missing crater-request.items.item responses in body", () => {
   const event = {
-    body: `<crater-request><client id="cc"/><items><item id="123"><test /></item></items></crater-request>`
+    body: `<crater-request><client id="cc"/><items><item id="1"><test /></item></items></crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing item reqsponses in request!", true));
 });
 
 test("fails with missing crater-request.items.item.responses.id in body", () => {
   const event = {
-    body: `<crater-request><client id="cc"/><items><item id="123"><responses><response /></responses></item></items></crater-request>`
+    body: `<crater-request><client id="cc"/><items><item id="1"><responses><response /></responses></item></items></crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing response id in request!", true));
 });
 
 test("fails when proxied question rater endpoint doesn't return label value", () => {
-  axios.post.mockReturnValue({data: {}});
+  postViaPromise.mockReturnValue({data: {}});
 
   const event = {
     headers: {"Content-Type": "text/html"},
-    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"123\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[this is a test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
+    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"1\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[this is a test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
   };
-  expect(handler(event)).resolves.toEqual(errorResult("Error: Missing label in question rater response!", true));
+  expect(handler(event)).resolves.toEqual(errorResult("Error: Missing label in automl question rater response!", true));
 });
 
 test("returns a valid xml response on a good request", async () => {
-  axios.post.mockReturnValue({data: {label: "2"}});
+  postViaPromise.mockReturnValue({data: {label: "2"}});
 
   const event = {
     headers: {"Content-Type": "text/html"},
-    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"123\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[this is a test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
+    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"1\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[this is a test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
   };
 
   // see https://github.com/concord-consortium/lara/blob/master/spec/libs/c_rater/api_wrapper_spec.rb#L30
   const result = await handler(event);
   const client_id = "cc";
-  const item_id = "123";
+  const item_id = "1";
   const response_id = "456";
   const score = "2";
   expect(result.statusCode).toEqual(200);
