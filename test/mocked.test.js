@@ -30,7 +30,10 @@ test("fails with missing crater-request element in body", () => {
 test("fails with missing crater-request.client element in body", () => {
   const event = {
     headers,
-    body: "<crater-request><test /></crater-request>"
+    body: `
+      <crater-request>
+        <test />
+      </crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing crater-request.client element in request!"));
 });
@@ -38,7 +41,10 @@ test("fails with missing crater-request.client element in body", () => {
 test("fails with missing crater-request.client id in body", () => {
   const event = {
     headers,
-    body: "<crater-request><client/></crater-request>"
+    body: `
+      <crater-request>
+        <client/>
+      </crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing id attribute in crater-request.client element in request!"));
 });
@@ -46,7 +52,11 @@ test("fails with missing crater-request.client id in body", () => {
 test("fails with missing crater-request.items in body", () => {
   const event = {
     headers,
-    body: `<crater-request><client id="cc"/><test /></crater-request>`
+    body: `
+      <crater-request>
+        <client id="cc"/>
+        <test />
+      </crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing crater-request.items element in request!", true));
 });
@@ -54,7 +64,15 @@ test("fails with missing crater-request.items in body", () => {
 test("fails with missing crater-request.items.item id in body", () => {
   const event = {
     headers,
-    body: `<crater-request><client id="cc"/><items><item><test /></item></items></crater-request>`
+    body: `
+      <crater-request>
+        <client id="cc"/>
+        <items>
+          <item>
+            <test />
+          </item>
+        </items>
+      </crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing item id in request!", true));
 });
@@ -62,7 +80,15 @@ test("fails with missing crater-request.items.item id in body", () => {
 test("fails with missing crater-request.items.item responses in body", () => {
   const event = {
     headers,
-    body: `<crater-request><client id="cc"/><items><item id="1"><test /></item></items></crater-request>`
+    body: `
+      <crater-request>
+        <client id="cc"/>
+        <items>
+          <item id="1">
+            <test />
+          </item>
+        </items>
+      </crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing item reqsponses in request!", true));
 });
@@ -70,7 +96,17 @@ test("fails with missing crater-request.items.item responses in body", () => {
 test("fails with missing crater-request.items.item.responses.id in body", () => {
   const event = {
     headers,
-    body: `<crater-request><client id="cc"/><items><item id="1"><responses><response /></responses></item></items></crater-request>`
+    body: `
+      <crater-request>
+        <client id="cc"/>
+        <items>
+          <item id="1">
+            <responses>
+              <response />
+            </responses>
+          </item>
+        </items>
+      </crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing response id in request!", true));
 });
@@ -80,7 +116,19 @@ test("fails when proxied question rater endpoint doesn't return label value", ()
 
   const event = {
     headers: headersWithContentType,
-    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"1\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[this is a test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
+    body: `
+      <crater-request includeRNS="N">
+        <client id="cc"/>
+        <items>
+          <item id="1">
+            <responses>
+              <response id="456">
+                <![CDATA[this is a test]]>
+              </response>
+            </responses>
+          </item>
+        </items>
+      </crater-request>`
   };
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing label in automl question rater response!", true));
 });
@@ -90,7 +138,19 @@ test("returns a valid xml response on a good request", async () => {
 
   const event = {
     headers: headersWithContentType,
-    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"1\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[this is a test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
+    body: `
+      <crater-request includeRNS="N">
+        <client id="cc"/>
+        <items>
+          <item id="1">
+            <responses>
+              <response id="456">
+                <![CDATA[this is a test]]>
+              </response>
+            </responses>
+          </item>
+        </items>
+      </crater-request>`
   };
 
   // see https://github.com/concord-consortium/lara/blob/master/spec/libs/c_rater/api_wrapper_spec.rb#L30

@@ -10,7 +10,19 @@ const headers = {
 test("returns a valid xml response on a good request to the non-mocked automl service", async () => {
   const event = {
     headers,
-    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"1\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
+    body: `
+      <crater-request includeRNS="N">
+        <client id="cc"/>
+          <items>
+            <item id="1">
+              <responses>
+                <response id="456">
+                  <![CDATA[test]]>
+                </response>
+              </responses>
+            </item>
+          </items>
+        </crater-request>`
   };
 
   // see https://github.com/concord-consortium/lara/blob/master/spec/libs/c_rater/api_wrapper_spec.rb#L30
@@ -40,7 +52,19 @@ test("returns a valid xml response on a good request to the non-mocked automl se
 test("returns a valid xml response on a good request to the non-mocked azure service", async () => {
   const event = {
     headers,
-    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"2\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
+    body: `
+      <crater-request includeRNS="N">
+        <client id="cc"/>
+          <items>
+            <item id="2">
+              <responses>
+                <response id="456">
+                  <![CDATA[test]]>
+                </response>
+              </responses>
+            </item>
+          </items>
+        </crater-request>`
   };
 
   // see https://github.com/concord-consortium/lara/blob/master/spec/libs/c_rater/api_wrapper_spec.rb#L30
