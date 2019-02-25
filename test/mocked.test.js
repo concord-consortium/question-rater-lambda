@@ -1,19 +1,8 @@
 const axios = require("axios");
 const {handler} = require("../index");
+const {assertXmlMatch, errorResult} = require("./test-utils");
 
 jest.mock('axios');
-
-const errorResult = (error, includeClientId) => {
-  return {
-    statusCode: 400,
-    body: `<crater-results>\n  <tracking id=\"12345\"/>\n${includeClientId ? "  <client id=\"cc\"/>\n" : ""}  <error>${error}</error>\n</crater-results>`
-  }
-}
-
-const ignoreWhiteSpace = (string) => string.replace(/[\r|\n|\t\s]?/gm, "");
-const assertXmlMatch = (actual, expected) => {
-  expect(ignoreWhiteSpace(actual)).toEqual(ignoreWhiteSpace(expected));
-}
 
 test("fails with missing body element in event", () => {
   expect(handler({})).resolves.toEqual(errorResult("Error: Missing body element in lambda event!"));
@@ -109,4 +98,3 @@ test("returns a valid xml response on a good request", async () => {
   `;
   assertXmlMatch(result.body, expectedXml);
 });
-
