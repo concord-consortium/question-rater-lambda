@@ -4,15 +4,15 @@ const {assertXmlMatch} = require("./test-utils");
 test("returns a valid xml response on a good request to the non-mocked service", async () => {
   const event = {
     headers: {"Content-Type": "text/html"},
-    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"123\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
+    body: "<crater-request includeRNS=\"N\">\n\t<client id=\"cc\"/>\n\t<items>\n\t  <item id=\"2\">\n\t    <responses>\n\t      <response id=\"456\">\n\t        <![CDATA[test]]>\n\t      </response>\n\t    </responses>\n\t  </item>\n\t</items>\n</crater-request>"
   };
 
   // see https://github.com/concord-consortium/lara/blob/master/spec/libs/c_rater/api_wrapper_spec.rb#L30
   const result = await handler(event);
   const client_id = "cc";
-  const item_id = "123";
+  const item_id = "2";
   const response_id = "456";
-  const score = "1";
+  const score = "4";
   expect(result.statusCode).toEqual(200);
   expect(result.headers['Content-Type']).toEqual('text/xml');
   const expectedXml = `

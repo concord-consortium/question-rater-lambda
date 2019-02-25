@@ -1,8 +1,68 @@
-const axios = require("axios");
-const {parseString, Builder} = require("xml2js");
+require('dotenv').config();
+
+const { postViaPromise } = require("./post-via-promise");
+const { parseString, Builder } = require("xml2js");
 
 const util = require("util");
 const parseXML = util.promisify(parseString);
+
+const { itemMap } = require("./item-map");
+
+const endPoints = {
+  automl: {
+    request: (item, params) => {
+      return {
+        params
+      }
+    },
+    response: (result) => {
+      if (!result || !result.data || !result.data.hasOwnProperty("label")) {
+        throw new Error("Missing label in automl question rater response!");
+      }
+      return {
+        score: result.data.label
+      }
+    },
+  },
+  azure: {
+    request: (item, params) => {
+      const {answer} = params;
+      return {
+        params: {
+          "Inputs": {
+            "input1": {
+              "ColumnNames": [
+                "answer"
+              ],
+              "Values": [
+                [
+                  answer
+                ]
+              ]
+            }
+          },
+          "GlobalParameters": {}
+        },
+        config: {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${item.bearerToken}`
+          }
+        }
+      }
+    },
+    response: (result) => {
+      // console.log("result.Results.output1.value", result.Results.output1.value.Values);
+      if (!result || !result.Results || !result.Results.output1 || !result.Results.output1.value || !result.Results.output1.value.Values || !result.Results.output1.value.Values[0]) {
+        throw new Error("Invalid response format for azure question rater response!");
+      }
+      const score = result.Results.output1.value.Values[0].pop();
+      return {
+        score
+      }
+    }
+  }
+};
 
 const getResponseResult = async (clientId, itemId, responseArray) => {
   const response = responseArray[0];
@@ -16,16 +76,24 @@ const getResponseResult = async (clientId, itemId, responseArray) => {
   }
 
   // send info to rating service and await response and then return score
-  const url = process.env.RATER_ENDPOINT || "https://us-central1-esaaf-auto-score-test.cloudfunctions.net/getPrediction";
-  const params = {clientId, itemId, responseId, answer};
-  const result = await axios.post(url, params);
-  if (!result || !result.data || !result.data.hasOwnProperty("label")) {
-    throw new Error("Missing label in question rater response!");
+  const item = itemMap[itemId];
+  if (!item) {
+    throw new Error(`No endpoint defined for item ${itemId}`);
   }
+  const {type, url} = item;
+  if (!type || !url) {
+    throw new Error(`No type or url defined for item ${itemId}`);
+  }
+  const endPoint = endPoints[type];
+  if (!endPoint) {
+    throw new Error(`No endpoint defined for ${type} item type`);
+  }
+  const {params, config} = endPoint.request(item, {clientId, itemId, responseId, answer})
+  const {score} = endPoint.response(await postViaPromise(url, params, config));
 
   return {
     response: {
-      $: {id: responseId, score: result.data.label},
+      $: {id: responseId, score},
     }
   }
 }
