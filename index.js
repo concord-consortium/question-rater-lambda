@@ -18,11 +18,11 @@ const endPoints = {
       }
     },
     response: (result) => {
-      if (!result || !result.data || !result.data.hasOwnProperty("label")) {
+      if (!result || !result.hasOwnProperty("label")) {
         throw new Error("Missing label in automl question rater response!");
       }
       return {
-        score: result.data.label
+        score: result.label
       }
     },
   },

@@ -76,7 +76,7 @@ test("fails with missing crater-request.items.item.responses.id in body", () => 
 });
 
 test("fails when proxied question rater endpoint doesn't return label value", () => {
-  postViaPromise.mockReturnValue({data: {}});
+  postViaPromise.mockReturnValue({});
 
   const event = {
     headers: headersWithContentType,
@@ -86,7 +86,7 @@ test("fails when proxied question rater endpoint doesn't return label value", ()
 });
 
 test("returns a valid xml response on a good request", async () => {
-  postViaPromise.mockReturnValue({data: {label: "2"}});
+  postViaPromise.mockReturnValue({label: "2"});
 
   const event = {
     headers: headersWithContentType,
