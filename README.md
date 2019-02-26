@@ -12,8 +12,10 @@ A zipped version of this repo is used by [question-rater CloudFormation template
 
 ## Local Testing
 
-To test locally you'll need to create a `.env` file containing values for all the bearer tokens defined in item-map.js.  The `.env` file will look like:
+To test locally you'll need to create a `.env` file containing the API username and password and values for all the bearer tokens defined in item-map.js.  The `.env` file will look like:
 
 ```
+C_RATER_USERNAME=<username>
+C_RATER_PASSWORD=<password>
 AZURE_Q2_API_TOKEN=<token value>
 ```

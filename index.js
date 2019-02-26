@@ -8,6 +8,8 @@ const parseXML = util.promisify(parseString);
 
 const { itemMap } = require("./item-map");
 
+const { authorizationValue } = require("./auth");
+
 const endPoints = {
   automl: {
     request: (item, params) => {
@@ -16,11 +18,11 @@ const endPoints = {
       }
     },
     response: (result) => {
-      if (!result || !result.data || !result.data.hasOwnProperty("label")) {
+      if (!result || !result.hasOwnProperty("label")) {
         throw new Error("Missing label in automl question rater response!");
       }
       return {
-        score: result.data.label
+        score: result.label
       }
     },
   },
@@ -52,7 +54,6 @@ const endPoints = {
       }
     },
     response: (result) => {
-      // console.log("result.Results.output1.value", result.Results.output1.value.Values);
       if (!result || !result.Results || !result.Results.output1 || !result.Results.output1.value || !result.Results.output1.value.Values || !result.Results.output1.value.Values[0]) {
         throw new Error("Invalid response format for azure question rater response!");
       }
@@ -115,6 +116,8 @@ const getItemResult = async (clientId, itemArray) => {
 }
 
 exports.handler = async (event) => {
+  let errorStatusCode = 400;
+
   const builder = new Builder({headless: true, cdata: true});
   const result = {
     "crater-results": {
@@ -124,6 +127,15 @@ exports.handler = async (event) => {
   const innerResult = result["crater-results"];
 
   try {
+    if (!event.headers || !event.headers.Authorization) {
+      throw new Error("Missing Authorization header!");
+    }
+
+    if (event.headers.Authorization !== authorizationValue) {
+      errorStatusCode = 401;
+      throw new Error("Invalid username or password!");
+    }
+
     if (!event.body) {
       throw new Error("Missing body element in lambda event!");
     }
@@ -159,7 +171,7 @@ exports.handler = async (event) => {
   catch (e) {
     innerResult.error = {_: e.toString()};
     return {
-      statusCode: 400,
+      statusCode: errorStatusCode,
       body: builder.buildObject(result)
     }
   }
