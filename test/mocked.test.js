@@ -84,7 +84,7 @@ test("fails with missing crater-request.items.item responses in body", () => {
       <crater-request>
         <client id="cc"/>
         <items>
-          <item id="1">
+          <item id="FUTURE_X">
             <test />
           </item>
         </items>
@@ -100,7 +100,7 @@ test("fails with missing crater-request.items.item.responses.id in body", () => 
       <crater-request>
         <client id="cc"/>
         <items>
-          <item id="1">
+          <item id="FUTURE_X">
             <responses>
               <response />
             </responses>
@@ -120,7 +120,7 @@ test("fails when proxied question rater endpoint doesn't return label value", ()
       <crater-request includeRNS="N">
         <client id="cc"/>
         <items>
-          <item id="1">
+          <item id="FUTURE_X">
             <responses>
               <response id="456">
                 <![CDATA[this is a test]]>
@@ -142,7 +142,7 @@ test("returns a valid xml response on a good request", async () => {
       <crater-request includeRNS="N">
         <client id="cc"/>
         <items>
-          <item id="1">
+          <item id="FUTURE_X">
             <responses>
               <response id="456">
                 <![CDATA[this is a test]]>
@@ -156,7 +156,7 @@ test("returns a valid xml response on a good request", async () => {
   // see https://github.com/concord-consortium/lara/blob/master/spec/libs/c_rater/api_wrapper_spec.rb#L30
   const result = await handler(event);
   const client_id = "cc";
-  const item_id = "1";
+  const item_id = "FUTURE_X";
   const response_id = "456";
   const score = "2";
   expect(result.statusCode).toEqual(200);
