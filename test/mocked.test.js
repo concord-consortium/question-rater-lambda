@@ -90,10 +90,10 @@ test("fails with missing crater-request.items.item responses in body", () => {
         </items>
       </crater-request>`
   }
-  expect(handler(event)).resolves.toEqual(errorResult("Error: Missing item reqsponses in request!", true));
+  expect(handler(event)).resolves.toEqual(errorResult("Error: Missing item responses in request!", true));
 });
 
-test("fails with missing crater-request.items.item.responses.id in body", () => {
+test("fails with missing crater-request.items.item.responses.response.id in body", () => {
   const event = {
     headers,
     body: `
@@ -109,6 +109,24 @@ test("fails with missing crater-request.items.item.responses.id in body", () => 
       </crater-request>`
   }
   expect(handler(event)).resolves.toEqual(errorResult("Error: Missing response id in request!", true));
+});
+
+test("fails with missing crater-request.items.item.responses.response inner text in body", () => {
+  const event = {
+    headers,
+    body: `
+      <crater-request>
+        <client id="cc"/>
+        <items>
+          <item id="FUTURE_X">
+            <responses>
+              <response id="456"/>
+            </responses>
+          </item>
+        </items>
+      </crater-request>`
+  }
+  expect(handler(event)).resolves.toEqual(errorResult("Error: Missing answer in request!", true));
 });
 
 test("fails when proxied question rater endpoint doesn't return label value", () => {
@@ -130,7 +148,7 @@ test("fails when proxied question rater endpoint doesn't return label value", ()
         </items>
       </crater-request>`
   };
-  expect(handler(event)).resolves.toEqual(errorResult("Error: Missing label in automl question rater response!", true));
+  expect(handler(event)).resolves.toEqual(errorResult("Error: Missing label in question rater response!", true));
 });
 
 test("returns a valid xml response on a good request", async () => {
