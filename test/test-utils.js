@@ -7,7 +7,8 @@ const assertXmlMatch = (actual, expected) => {
 const errorResult = (error, includeClientId) => {
   return {
     statusCode: 400,
-    body: `<crater-results>\n  <tracking id=\"12345\"/>\n${includeClientId ? "  <client id=\"cc\"/>\n" : ""}  <error>${error}</error>\n</crater-results>`
+    headers: {"Content-Type": "text/xml"},
+    body: `<crater-results>\n  <tracking id="12345"/>\n${includeClientId ? "  <client id=\"cc\"/>\n" : ""}  <error code="400">${error}</error>\n</crater-results>`
   }
 }
 
