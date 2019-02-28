@@ -162,16 +162,15 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: {
-        "Content-Type": "text/xml"
-      },
+      headers: {"Content-Type": "text/xml"},
       body: builder.buildObject(result)
     }
   }
   catch (e) {
-    innerResult.error = {_: e.toString()};
+    innerResult.error = {$: {code: errorStatusCode}, _: e.toString()};
     return {
       statusCode: errorStatusCode,
+      headers: {"Content-Type": "text/xml"},
       body: builder.buildObject(result)
     }
   }
