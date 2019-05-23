@@ -103,6 +103,10 @@ exports.handler = async (event) => {
     }
   }
   catch (e) {
+    // log error if not in Jest test so it shows in the CloudWatch logs
+    if (!process.env.JEST_WORKER_ID) {
+      console.error(e.toString());
+    }
     innerResult.error = {$: {code: errorStatusCode}, _: e.toString()};
     return {
       statusCode: errorStatusCode,
