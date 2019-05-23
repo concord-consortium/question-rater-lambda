@@ -56,7 +56,7 @@ test("returns a valid xml response on a good request to the non-mocked automl FU
   const client_id = "cc";
   const item_id = "FUTURE_X";
   const response_id = "456";
-  const score = "1";
+  const score = "2";
   expect(result.statusCode).toEqual(200);
   expect(result.headers['Content-Type']).toEqual('text/xml');
   const expectedXml = `
