@@ -10,6 +10,9 @@ const headersWithoutAuthorization = {
   "Content-Type": "text/html"
 };
 
+// used to prevent the test from breaking due to the score changing in the real service
+const forceScoreResult = (body, score) => body.replace(/score="\d"/, `score="${score}"`);
+
 test("returns an error when no authorization header is present", async () => {
   const event = {
     headers: headersWithoutAuthorization,
@@ -72,7 +75,7 @@ test("returns a valid xml response on a good request to the non-mocked automl FU
       </items>
     </crater-results>
   `;
-  assertXmlMatch(result.body, expectedXml);
+  assertXmlMatch(forceScoreResult(result.body, score), expectedXml);
 });
 
 test("returns a valid xml response on a good request to the non-mocked automl CARBON_X service", async () => {
@@ -114,6 +117,6 @@ test("returns a valid xml response on a good request to the non-mocked automl CA
       </items>
     </crater-results>
   `;
-  assertXmlMatch(result.body, expectedXml);
+  assertXmlMatch(forceScoreResult(result.body, score), expectedXml);
 });
 
