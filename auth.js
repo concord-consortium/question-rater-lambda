@@ -4,4 +4,4 @@ if (!cRaterUsername || !cRaterPassword) {
   throw new Error("Missing C_RATER_USERNAME or C_RATER_PASSWORD environment variable!");
 }
 
-exports.authorizationValue = `Basic ${new Buffer(`${cRaterUsername}:${cRaterPassword}`).toString('base64')}`;
+exports.authorizationValue = `Basic ${Buffer.from(`${cRaterUsername}:${cRaterPassword}`).toString('base64')}`;
