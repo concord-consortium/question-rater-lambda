@@ -6,7 +6,7 @@ const { parseString, Builder } = require("xml2js");
 const util = require("util");
 const parseXML = util.promisify(parseString);
 
-const { authorizationValue } = require("./auth");
+const { authorizationValue, authorizationEnabled } = require("./auth");
 
 const getResponseResult = async (clientId, itemId, responseArray) => {
   const response = responseArray[0];
@@ -63,13 +63,15 @@ exports.handler = async (event) => {
   const innerResult = result["crater-results"];
 
   try {
-    if (!event.headers || !event.headers.Authorization) {
-      throw new Error("Missing Authorization header!");
-    }
+    if (authorizationEnabled()) { // authorization is optional now, and most likely will be disabled in production env
+      if (!event.headers || !event.headers.Authorization) {
+        throw new Error("Missing Authorization header!");
+      }
 
-    if (event.headers.Authorization !== authorizationValue) {
-      errorStatusCode = 401;
-      throw new Error("Invalid username or password!");
+      if (event.headers.Authorization !== authorizationValue) {
+        errorStatusCode = 401;
+        throw new Error("Invalid username or password!");
+      }
     }
 
     if (!event.body) {

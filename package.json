@@ -1,6 +1,6 @@
 {
   "name": "question-rater-lambda",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Question Rater lamba function",
   "main": "index.js",
   "scripts": {
