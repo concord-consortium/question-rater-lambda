@@ -8,6 +8,13 @@ const parseXML = util.promisify(parseString);
 
 const { authorizationValue, authorizationEnabled } = require("./auth");
 
+const headers = {
+  "Content-Type": "text/xml",
+  "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS"
+};
+
 const getResponseResult = async (clientId, itemId, responseArray) => {
   const response = responseArray[0];
   const responseId = response.$ ? response.$.id : null;
@@ -100,7 +107,7 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: {"Content-Type": "text/xml"},
+      headers,
       body: builder.buildObject(result)
     }
   }
@@ -112,7 +119,7 @@ exports.handler = async (event) => {
     innerResult.error = {$: {code: errorStatusCode}, _: e.toString()};
     return {
       statusCode: errorStatusCode,
-      headers: {"Content-Type": "text/xml"},
+      headers,
       body: builder.buildObject(result)
     }
   }
